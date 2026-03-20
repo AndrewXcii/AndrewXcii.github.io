@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пробуждение Флоры</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --parchment: #ede5d0;
+    --ink: #1a1408;
+    --sepia: #6b5a3e;
+    --gold: #b8960c;
+    --gold-light: #d4af37;
+    --rose: #8b3a52;
+    --moss: #4a5e3a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'EB Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Текстурный фон */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(184,150,12,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(139,58,82,0.07) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Декоративные цветочные элементы */
+  .petal-left, .petal-right {
+    position: fixed;
+    top: 0;
+    width: 180px;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.12;
+  }
+  .petal-left { left: 0; background: linear-gradient(90deg, rgba(74,94,58,0.4), transparent); }
+  .petal-right { right: 0; background: linear-gradient(-90deg, rgba(139,58,82,0.3), transparent); }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 80px 40px 120px;
+  }
+
+  /* Заголовок */
+  header {
+    text-align: center;
+    margin-bottom: 64px;
+    animation: fadeDown 1.2s ease both;
+  }
+
+  .subtitle-fr {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--sepia);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(36px, 6vw, 56px);
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+
+  .ornament {
+    color: var(--gold);
+    font-size: 22px;
+    letter-spacing: 0.3em;
+    display: block;
+    margin: 16px 0;
+  }
+
+  .divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 20px auto;
+  }
+
+  /* Плеер */
+  .player-wrap {
+    background: linear-gradient(135deg, rgba(255,252,245,0.9), rgba(237,229,208,0.6));
+    border: 1px solid rgba(184,150,12,0.25);
+    border-radius: 2px;
+    padding: 24px 32px;
+    margin-bottom: 64px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 32px rgba(26,20,8,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+    animation: fadeUp 1.4s ease both;
+    animation-delay: 0.3s;
+  }
+
+  .player-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--sepia);
+    letter-spacing: 0.15em;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  audio {
+    width: 100%;
+    height: 40px;
+    outline: none;
+    border-radius: 2px;
+    filter: sepia(20%) saturate(0.8);
+  }
+
+  audio::-webkit-media-controls-panel {
+    background: rgba(237,229,208,0.4);
+  }
+
+  /* Текст */
+  .text-body {
+    animation: fadeUp 1.6s ease both;
+    animation-delay: 0.5s;
+  }
+
+  .chapter {
+    margin-bottom: 52px;
+  }
+
+  .chapter-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--sepia);
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(184,150,12,0.2);
+    font-style: italic;
+  }
+
+  p {
+    font-size: 18px;
+    line-height: 1.85;
+    color: var(--ink);
+    text-align: justify;
+    text-indent: 2em;
+    margin-bottom: 14px;
+  }
+
+  p.no-indent { text-indent: 0; }
+
+  /* Список цветов */
+  .flowers {
+    list-style: none;
+    padding: 16px 0;
+    margin: 8px 0 16px 2em;
+  }
+
+  .flowers li {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 2;
+    color: var(--ink);
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .flowers li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 10px;
+    top: 6px;
+    font-style: normal;
+  }
+
+  /* Послание — выделить */
+  .chapter-lesson p {
+    text-indent: 0;
+    padding-left: 28px;
+    border-left: 2px solid rgba(184,150,12,0.3);
+    margin-bottom: 10px;
+    font-style: italic;
+    color: var(--sepia);
+  }
+
+  /* Финальный орнамент */
+  .finale {
+    text-align: center;
+    margin-top: 64px;
+    opacity: 0.5;
+  }
+
+  .finale span {
+    font-size: 18px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+  }
+
+  /* Инструкция для пользователя */
+  .upload-hint {
+    background: rgba(184,150,12,0.07);
+    border: 1px dashed rgba(184,150,12,0.4);
+    border-radius: 2px;
+    padding: 16px 24px;
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--sepia);
+    margin-bottom: 14px;
+  }
+
+  /* Картина */
+  .painting-wrap {
+    text-align: center;
+    margin-bottom: 52px;
+    animation: fadeUp 1.4s ease both;
+    animation-delay: 0.2s;
+  }
+
+  .painting {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 50%;
+    box-shadow: 0 8px 48px rgba(26,20,8,0.22), 0 0 0 6px rgba(184,150,12,0.18), 0 0 0 12px rgba(237,229,208,0.6);
+    display: block;
+    margin: 0 auto;
+  }
+
+  .painting-caption {
+    margin-top: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--sepia);
+    letter-spacing: 0.1em;
+  }
+
+
+  .dedication {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--sepia);
+    letter-spacing: 0.15em;
+    margin-top: 18px;
+  }
+
+  .dedication::before {
+    content: '— ';
+    color: var(--gold);
+  }
+
+  .author {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--sepia);
+    margin-top: 8px;
+    opacity: 0.7;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 48px 24px 80px; }
+    p { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="petal-left"></div>
+<div class="petal-right"></div>
+
+<div class="container">
+
+  <header>
+    <div class="subtitle-fr">Оригинальный рассказ</div>
+    <h1>Пробуждение Флоры</h1>
+    <span class="ornament">❧ ✦ ❧</span>
+    <div class="divider"></div>
+    <div class="dedication">Посвящается Анастасии К.</div>
+    <div class="author">Andrew Xcii</div>
+  </header>
+
+  <!-- КАРТИНА -->
+  <figure class="painting-wrap">
+    <img src="Flora_painting.jpg" alt="William-Adolphe Bouguereau — Flora and Zephyr, 1875" class="painting">
+    <figcaption class="painting-caption">William-Adolphe Bouguereau &nbsp;·&nbsp; <em>Flora and Zephyr</em> &nbsp;·&nbsp; 1875</figcaption>
+  </figure>
+
+  <!-- ПЛЕЕР -->
+  <div class="player-wrap">
+    <div class="player-label">Музыка: Riccardo Drigo · Le Réveil de Flore</div>
+    <audio controls preload="metadata">
+      <source src="Flora_music.mp3" type="audio/mpeg">
+      Ваш браузер не поддерживает аудио.
+    </audio>
+  </div>
+
+  <!-- ТЕКСТ -->
+  <div class="text-body">
+
+    <div class="chapter">
+      <div class="chapter-title">I. Пробуждение</div>
+      <p>В стародавние времена, когда боги ещё ступали по земле, жила дивная нимфа. Её нарекали по-разному — Расцветающей, Владычицей красок, Той, из коей произрастает сущее. Но имя, дарованное ей богами, означало просто: Жизнь в цветах.</p>
+      <p>Она была юна, нежна и воплощала саму красоту весны. Но обитала в уединении, сокрытая от мира в облаках и туманах, в том краю, где рождаются ветры и где время течёт иначе.</p>
+      <p>Однажды, когда земля ещё дремала под снегом и стужей, явился юноша. Его величали Дыханием, Лобзанием рассвета, Тем, что пробуждает. Он был молод и прекрасен, его дуновение несло тепло и жизнь. Этот дух летал над холодными полями и зрел красоту природы, дремлющей подо льдом, — красоту, которую лишь он один умел распознать.</p>
+      <p>Но когда юноша встретил нимфу, сердце его затрепетало. Он увидел в её очах отражение всех цветов, что когда-либо расцветали, всех соцветий, что ещё расцветут. Молодой дух полюбил без памяти.</p>
+      <p>Он похитил её, унеся в свои облачные объятия. Нимфа поначалу противилась — золотые власы её развевались, как стяг восстания, крик звучал подобно раскату грома. Но мало-помалу, внимая его речам, она ощутила искренность его чувств.</p>
+      <p>Юноша поведал ей обо всём, что видел на свете. О дремлющей природе, что алчет пробуждения. О семенах, готовых прорасти, но ждущих знамения. О птицах, летящих из дальних краёв в поисках гнезда. О том, как земля стонет подо льдом, взывая к тому, кто разбудит её.</p>
+      <p class="no-indent" style="font-style:italic; padding-left:2em;">«Лишь ты способна свершить сие, — говорил он. — Лишь твоя краса, лишь твоя мощь в силах пробудить спящий мир».</p>
+      <p>Нимфа была тронута его словами и его любовью. Она согласилась сойти на землю. Она согласилась стать его спутницей в великом деянии пробуждения.</p>
+      <p>И тогда свершилось чудо.</p>
+      <p>Куда бы она ни ступала, вырастали цветы. Первые — робкие, нежные, как младенцы. Затем — всё более дерзкие, всё более яркие. Всюду, куда веял юноша, его теплынь пробуждала жизнь, таившуюся в корнях и семенах.</p>
+      <p>Вместе они кружили над полями и лесами. Их танец был древним, священным, полным волшебства. Снег таял — не просто таял, а пел, таял со слезами ликования. Земля зеленела, словно приходила в чувство после долгого забытья.</p>
+
+      <ul class="flowers">
+        <li>Анемоны — нежные белые звёздочки</li>
+        <li>Розы — царицы среди цветов, алые от страсти</li>
+        <li>Нарциссы — жёлтые, как само светило</li>
+        <li>Тюльпаны — горделивые и яркие, как стяги</li>
+        <li>Лилии — чистые и скорбные</li>
+        <li>Подснежники — первые смельчаки, пробивающие снежный покров</li>
+        <li>Крокусы — маленькие лиловые вестники перемен</li>
+      </ul>
+
+      <p>Бабочки и пчёлы появлялись из ниоткуда, будто рождаясь из самого воздуха. Птицы затягивали гимны весне — каждая своим голосом, но все вместе слагая симфонию возвращения.</p>
+      <p>Люди на тверди взирали в небо и возглашали: «Вот она, весна! Вот она, жизнь! Вот она пришла!»</p>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-title">II. Дары и царство</div>
+      <p>Юноша одарил нимфу бесценным даром — вечной юностью. Но то была не молодость тела, а юность духа, способность вечно дивиться миру, вечно радоваться прелести сущего.</p>
+      <p>Он наделил её и властью над всеми цветами земли. Не властью повелительницы, а властью любящей матери, что знает каждый цветок по имени, что помогает ему расцветать, что скорбит, когда он вянет.</p>
+      <p>С того дня нимфа стала королевой весны, владычицей пробуждения, царицей того мгновения, когда жизнь взрывается из мёртвого сна. А юноша сделался её верным спутником, её дуновением, её лобзанием — год за годом.</p>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-title">III. Вечный круговорот</div>
+      <p>Каждый год, когда стужа начинает отступать и в воздухе чувствуется первое тепло, боги повторяют этот танец.</p>
+      <p>Юноша веет мягким ветром, и нимфа пробуждается. Вежды её раскрываются медленно, как лепестки цветка, раскрывающегося навстречу солнцу. Они кружат вместе — он с его незримой нежностью, она с её зримой красотой. И твердь ликует.</p>
+      <p>И на земле вновь начинается весна — пора любви, обновления и чудес. Пора, когда всякий, кто взирает на первый цветок, пробивающийся сквозь снег, в это мгновение постигает смысл бытия.</p>
+    </div>
+
+    <div class="chapter chapter-lesson">
+      <div class="chapter-title">IV. Послание богов</div>
+      <p>Что любовь способна пробудить мир от мёртвого сна.</p>
+      <p>Что нежность сильнее стужи, что поцелуй теплее льда.</p>
+      <p>Что краса не вечна в смысле бесконечности, но вечна в смысле неизменного возвращения.</p>
+      <p>Что после каждой зимы приходит весна, и всякий раз это чудо, всякий раз это новое рождение.</p>
+      <p>Что верность существует не в отсутствии разлуки, а в способности вернуться, в обете, что ты придёшь вновь.</p>
+      <p>Что наш удел — пробуждаться каждый день, каждый год, в каждый миг жизни и созидать прелесть.</p>
+    </div>
+
+  </div>
+
+  <div class="finale">
+    <span>✦ · ✦ · ✦</span>
+  </div>
+
+</div>
+</body>
+</html>
